@@ -1,0 +1,28 @@
+{
+    "name" : "coogle/phass",
+    "description" : "Phass - A Google Glass Framework for PHP",
+    "type" : "library",
+    "homepage" : "http://www.github.com/coogle/phass",
+    "require" : {
+        "zendframework/zendframework" : ">2.2.0",
+        "coogle/cooglelib" : "dev-master"
+        "coogle/oauth2" : "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phass\\": "src/"
+        },
+        "classmap" : [
+            "./Module.php"
+        ]
+    },
+    "license": "BSD-3-Clause",
+    "authors" : [
+      {
+        "name" : "John Coggeshall",
+        "email" : "john@coggeshall.org",
+        "homepage" : "http://www.coggeshall.org/",
+        "role" : "Developer"
+      }
+    ]
+}

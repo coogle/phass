@@ -5,8 +5,8 @@
     "homepage" : "http://www.github.com/coogle/phass",
     "require" : {
         "zendframework/zendframework" : ">2.2.0",
-        "coogle/cooglelib" : "dev-master",
-        "coogle/oauth2" : "dev-master"
+        "coogle/cooglelib" : "*",
+        "coogle/oauth2" : "*"
     },
     "autoload": {
         "psr-4": {

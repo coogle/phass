@@ -226,7 +226,7 @@ class GlassService implements \Zend\ServiceManager\ServiceLocatorAwareInterface,
      */
     public function isAuthenticated() {
         
-        return $this->getServiceLocator()->get('Phass\OAuth2\Token')->isValid();
+        return $this->getServiceLocator()->get('OAuth2\Token')->isValid();
     }    
     
 }

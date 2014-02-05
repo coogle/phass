@@ -2,7 +2,7 @@
 
 namespace Phass\Notifications;
 
-use Phass\Events as GlassEvent;
+use Phass\PhassEvents as GlassEvent;
 use Zend\EventManager\Event;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\SharedListenerAggregateInterface;

@@ -2,7 +2,7 @@
 
 namespace Phass;
 
-class GlassEvents
+class PhassEvents
 {
     /**
      * The following are all events triggered when we recieve a Google Glass

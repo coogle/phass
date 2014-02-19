@@ -61,59 +61,59 @@ abstract class ApiAbstract implements ServiceLocatorAwareInterface, FactoryInter
         }
         
         if(isset($responseData['error']) && is_array($responseData['error'])) {
-        	$errorCode = isset($responseData['error']['code']) ? $responseData['error']['code'] : null;
-        	$errorMsg = isset($responseData['error']['message']) ? $responseData['error']['message'] : null;
+            $errorCode = isset($responseData['error']['code']) ? $responseData['error']['code'] : null;
+            $errorMsg = isset($responseData['error']['message']) ? $responseData['error']['message'] : null;
         
-        	throw new ApiCallException($errorMsg, $errorCode);
+            throw new ApiCallException($errorMsg, $errorCode);
         }
         
         return $responseData;
     }
     /**
-	 * @return the $_httpClient
-	 */
-	public function getHttpClient($path = null, $method = null) {
-	    
-	    $retval = $this->_httpClient;
-	    
-	    if(!is_null($path)) {
-	        $retval->setUri('https://www.googleapis.com' . $path);
-	    }
-	    
-	    if(!is_null($method)) {
-	        $retval->setMethod($method);
-	        
-	        if($method == Request::METHOD_POST) {
-	            $retval->getRequest()
-	                   ->getHeaders()
-	                   ->addHeaderLine('Content-Type', 'application/json');
-	        }
-	    }
-	    
-	    return $retval;
-	}
+     * @return the $_httpClient
+     */
+    public function getHttpClient($path = null, $method = null) {
+        
+        $retval = $this->_httpClient;
+        
+        if(!is_null($path)) {
+            $retval->setUri('https://www.googleapis.com' . $path);
+        }
+        
+        if(!is_null($method)) {
+            $retval->setMethod($method);
+            
+            if($method == Request::METHOD_POST) {
+                $retval->getRequest()
+                       ->getHeaders()
+                       ->addHeaderLine('Content-Type', 'application/json');
+            }
+        }
+        
+        return $retval;
+    }
 
-	/**
-	 * @param \Zend\Http\Client $_httpClient
-	 * @return self
-	 */
-	public function setHttpClient(\Zend\Http\Client $_httpClient) {
-		$this->_httpClient = $_httpClient;
-		return $this;
-	}
-	
-	/**
-	 * @return \Phass\Service\GlassService;
-	 */
-	public function getGlassService()
-	{
-	    return $this->_glassService;
-	}
-	
-	public function setGlassService($glassService)
-	{
-	    $this->_glassService = $glassService;
-	}
+    /**
+     * @param \Zend\Http\Client $_httpClient
+     * @return self
+     */
+    public function setHttpClient(\Zend\Http\Client $_httpClient) {
+        $this->_httpClient = $_httpClient;
+        return $this;
+    }
+    
+    /**
+     * @return \Phass\Service\GlassService;
+     */
+    public function getGlassService()
+    {
+        return $this->_glassService;
+    }
+    
+    public function setGlassService($glassService)
+    {
+        $this->_glassService = $glassService;
+    }
 
-	abstract public function execute($data = null);
+    abstract public function execute($data = null);
 }

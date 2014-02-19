@@ -9,7 +9,7 @@ class Get extends ApiAbstract
 {
     public function execute($data = null)
     {
-        $client = $this->getHttpClient('/mirror/v1/timeline' . urlencode((string)$data), Request::METHOD_GET);
+        $client = $this->getHttpClient('/mirror/v1/timeline/' . urlencode((string)$data), Request::METHOD_GET);
         
         $responseData = $this->executeRequest($client);
         

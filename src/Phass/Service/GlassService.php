@@ -3,6 +3,7 @@
 namespace Phass\Service;
 
 use Phass\Entity\Location;
+use Phass\Entity\Subscription;
 
 class GlassService implements \Zend\ServiceManager\ServiceLocatorAwareInterface, \Zend\EventManager\EventManagerAwareInterface
 {
@@ -130,6 +131,8 @@ class GlassService implements \Zend\ServiceManager\ServiceLocatorAwareInterface,
     
     public function subscribe($collection, $operations = array(), $guid = null)
     {
+        $validOps = array('UPDATE', 'INSERT', 'DELETE');
+         
         switch(true) {
             case $collection == static::COLLECTION_LOCATIONS:
             case $collection == static::COLLECTION_TIMELINE:
@@ -138,29 +141,35 @@ class GlassService implements \Zend\ServiceManager\ServiceLocatorAwareInterface,
                 throw new \InvalidArgumentException("Invalid collection Type");
         }
         
+        $operations = array_intersect($validOps, $operations);
+
+        if(empty($operations)) {
+            throw new \InvalidArgumentException("Empty list of operations, or invalid operations provided");
+        }
+        
         if(is_null($guid)) {
             $guid = static::generateGuid();
         }
         
         $config = $this->getServiceLocator()->get('Config');
         
-        if(is_null($config['googleglass']['subscriptionUri'])) {
+        if(is_null($config['phass']['subscriptionUri'])) {
             $router = $this->getServiceLocator()->get('Router');
             $requestUri = $router->getRequestUri();
             $requestUri->setQuery(null);
-            if(isset($config['googleglass']['development']) && $config['googleglass']['development']) {
+            if(isset($config['phass']['development']) && $config['phass']['development']) {
                 $requestUri->setScheme('http');
             } else {
                 $requestUri->setScheme('https');
             }
             
-            $callbackUrl = $router->assemble(array(), array('name' => 'googleglass-subscription-callback', 'force_canonical' => true, 'uri' => $requestUri));
+            $callbackUrl = $router->assemble(array(), array('name' => 'phass-subscription-callback', 'force_canonical' => true, 'uri' => $requestUri));
             
         } else {
-            $callbackUrl = $config['googleglass']['subscriptionUri'];
+            $callbackUrl = $config['phass']['subscriptionUri'];
         }
         
-        if(isset($config['googleglass']['development']) && $config['googleglass']['development']) {
+        if(isset($config['phass']['development']) && $config['phass']['development']) {
             $callbackUrl = static::DEV_HTTPS_PROXY_URL . "?url=" . $callbackUrl;
         }
         
@@ -172,11 +181,9 @@ class GlassService implements \Zend\ServiceManager\ServiceLocatorAwareInterface,
             $val = strtoupper($val);
             
             switch($val) {
-                case static::ACTION_TYPE_CUSTOM:
-                case static::ACTION_TYPE_DELETE:
-                case static::ACTION_TYPE_LAUNCH:
-                case static::ACTION_TYPE_REPLY:
-                case static::ACTION_TYPE_SHARE:
+                case Subscription::DELETE:
+                case Subscription::INSERT:
+                case Subscription::UPDATE:
                     break;
                 default:
                throw new \InvalidArgumentException("Action type '$val' not valid for subscription");
@@ -205,7 +212,7 @@ class GlassService implements \Zend\ServiceManager\ServiceLocatorAwareInterface,
     {
         $config = $this->getServiceLocator()->get('Config');
         
-        return sha1($config['googleglass']['randomKey']);
+        return sha1($config['phass']['randomKey']);
     }
     /**
      * @param unknown $userId
@@ -226,7 +233,7 @@ class GlassService implements \Zend\ServiceManager\ServiceLocatorAwareInterface,
      */
     public function isAuthenticated() {
         
-        return $this->getServiceLocator()->get('Phass\OAuth2\Token')->isValid();
+        return $this->getServiceLocator()->get('OAuth2\Token')->isValid();
     }    
     
 }

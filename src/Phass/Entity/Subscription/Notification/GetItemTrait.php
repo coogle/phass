@@ -26,6 +26,6 @@ trait GetItemTrait
         $itemId = $this->getItemId();
         
         $glassService = $this->getServiceLocator()->get('Phass\Service\GlassService');
-        return $glassService->timeline()->get($itemId);
+        return $glassService->execute('timeline::get', $itemId);
     }
 }

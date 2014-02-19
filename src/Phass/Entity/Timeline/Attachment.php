@@ -124,6 +124,37 @@ class Attachment extends GlassModelAbstract
 		return $this->_content;
 	}
 
+	public function downloadContent() {
+		if($this->isProcessing()) {
+			return false;
+		}
+		
+		$token = $this->getServiceLocator()->get('OAuth2\Token');
+		
+        $contextConfig = array(
+            'http' => array(
+                'method' => 'GET',
+                'header' => "Authorization: {$token->getTokenType()} {$token->getAccessToken()}" 
+            )
+        );
+        
+        $context = stream_context_create($contextConfig);
+        
+        $contentFile = fopen($this->getContentUrl(), 'r', false, $context);
+        
+        if(!$contentFile) {
+        	throw new \RuntimeException("Failed to open content URL for attachment");
+        }
+        
+        $content = "";
+        while(!feof($contentFile)) {
+        	$content .= fread($contentFile, 1024);
+        }
+        
+        $this->setContent($content);
+        return $this;
+	}
+	
 	/**
 	 * @param string $_mimeType
 	 * @return self

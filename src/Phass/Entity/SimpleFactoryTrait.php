@@ -18,6 +18,6 @@ trait SimpleFactoryTrait
             }
         }
         
-        return $retval;
+        return clone $retval;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Phass\Notifications;
 
-use Phass\Events as GlassEvent;
+use Phass\PhassEvents as GlassEvent;
 use Zend\EventManager\Event;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\SharedListenerAggregateInterface;
@@ -76,7 +76,8 @@ class NotificationsListener implements SharedListenerAggregateInterface, EventMa
         
         $config = $this->getServiceLocator()->get('Config');
         
-        if(is_null($config['googleglass']['subscriptionController'])) {
+        if(is_null($config['phass']['subscriptionController'])) {
+        	$this->logEvent("Subscription Controller Not Specified in Config", Logger::ERR);
             throw new \RuntimeException("Subscription Controller Not Specified in Config");
         }
         
@@ -85,8 +86,11 @@ class NotificationsListener implements SharedListenerAggregateInterface, EventMa
         $notification = $e->getParam('notification', null);
         
         if(is_null($notification) || !($notification instanceof AbstractNotification)) {
+        	$this->logEvent("Failed to retrieve notification object", Logger::ERR);
             throw new \RuntimeException("Failed to rertieve notification object");
         }
+        
+        $this->logEvent("Triggering EVENT_SUBSCRIPTION_RESOLVE_USER", Logger::DEBUG);
         
         $result = $this->getEventManager()->trigger(
             GlassEvent::EVENT_SUBSCRIPTION_RESOLVE_USER, 
@@ -105,8 +109,10 @@ class NotificationsListener implements SharedListenerAggregateInterface, EventMa
             return;
         }
         
-        $tokenStorageObj = $this->getServiceLocator()->get('Phass\Oauth2\TokenStore');
+        $tokenStorageObj = $this->getServiceLocator()->get('OAuth2\TokenStore');
         $tokenStorageObj->store($OAuth2Token);
+        
+        $this->logEvent("Dispatching to Subscription Controller", Logger::DEBUG);
         
         $mvcEvent = new MvcEvent();
         $mvcEvent->setTarget($application)
@@ -140,7 +146,7 @@ class NotificationsListener implements SharedListenerAggregateInterface, EventMa
         }
         
         $matches = new RouteMatch(array(
-            'controller' => $config['googleglass']['subscriptionController'],
+            'controller' => $config['phass']['subscriptionController'],
             'action' => $action
         ));
 

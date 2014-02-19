@@ -4,7 +4,7 @@ namespace Phass\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Log\Logger;
-use Phass\Events;
+use Phass\PhassEvents as Events;
 use Zend\Loader\Exception\SecurityException;
 use Phass\Entity\Subscription\Notification\AbstractNotification;
 use Phass\Service\GlassService;

@@ -9,6 +9,7 @@ use Phass\Entity\Location;
 use Zend\View\Model\ViewModel;
 use Zend\View\View;
 use Zend\Http\PhpEnvironment\Response;
+use Phass\Api\Exception\ApiCallException;
 
 class Item extends GlassModelAbstract implements \ArrayAccess
 {
@@ -153,33 +154,33 @@ class Item extends GlassModelAbstract implements \ArrayAccess
     protected $_template;
     
     /**
-	 * @return the $_template
-	 */
-	public function getTemplate() {
-		return $this->_template;
-	}
+     * @return the $_template
+     */
+    public function getTemplate() {
+        return $this->_template;
+    }
 
-	/**
-	 * @param string $_template
-	 * @return self
-	 */
-	public function setTemplate($_template) {
-		$this->_template = $_template;
-		return $this;
-	}
+    /**
+     * @param string $_template
+     * @return self
+     */
+    public function setTemplate($_template) {
+        $this->_template = $_template;
+        return $this;
+    }
 
-	public function setVariable($var, $val)
-	{
-	    $this->getViewModel()->setVariable($var, $val);
-	    return $this;
-	}
-	
-	public function getVariable($var)
-	{
-	    return $this->getViewModel()->getVariable($var);
-	}
-	
-	public function render(array $variables = array())
+    public function setVariable($var, $val)
+    {
+        $this->getViewModel()->setVariable($var, $val);
+        return $this;
+    }
+    
+    public function getVariable($var)
+    {
+        return $this->getViewModel()->getVariable($var);
+    }
+    
+    public function render(array $variables = array())
     {
         $config = $this->getServiceLocator()->get('Config');
         
@@ -780,6 +781,29 @@ class Item extends GlassModelAbstract implements \ArrayAccess
         }
         
         return $retval;
+    }
+    
+    public function getAttachment($index = 0)
+    {
+            $client = $this->getServiceLocator()->get('Phass\Api\Client');
+            
+            $attachments = $this->getAttachments();
+            
+            if(empty($attachments) || !isset($attachments[$index])) {
+                return null;
+            }
+            
+            try {
+                $response = $client->execute("timeline::attachment::get", array('itemId' => $this->getId(), 'attachmentId' => $attachments[$index]->getId()));
+            } catch(ApiCallException $e) {
+                if($e->getCode() == 404) {
+                    return null;
+                }
+                
+                throw $e;
+            }
+            
+            return $response;
     }
     
     public function fromJsonResult(array $result)

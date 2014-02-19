@@ -33,34 +33,30 @@ abstract class ApiAbstract implements ServiceLocatorAwareInterface, FactoryInter
     {
         $retval = new static();
         
-        $client = $serviceLocator->get('Phass\Http\Client');
-        $token = $serviceLocator->get('Phass\OAuth2\Token');
+        $client = $serviceLocator->get('OAuth2\Api\Client');
+        $token = $serviceLocator->get('OAuth2\Token');
         
         if(!$token->isValid()) {
             throw new InvalidTokenException("The Token is invalid");
         }
         
-        $authHeaders = array(
-            'Authorization' => "{$token->getTokenType()} {$token->getAccessToken()}"
-        );
-        
-        $client->setHeaders($authHeaders);
-        
         $retval->setHttpClient($client)
                ->setGlassService($serviceLocator->get('Phass\Service\GlassService'));
-        
         
         return $retval;
     }
     
     protected function executeRequest(\Zend\Http\Client $client)
     {
+    	$this->logEvent("Executing Mirror API request", 'DEBUG');
+    	$this->logEvent($client->getRequest()->__toString(), 'DEBUG');
+        $this->logEvent($client->getRequest()->getContent(), 'DEBUG');
+        
         $response = $client->send();
         
-        try {
+        try { 
             $responseData = Json::decode($response->getBody(), Json::TYPE_ARRAY);
         } catch(\Zend\Json\Exception\RuntimeException $e) {
-            file_put_contents("/tmp/response.txt", $response->getBody());
             throw new ApiCallException("JSON Decoding of response failed: {$e->getMessage()}");
         }
         

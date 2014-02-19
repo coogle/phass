@@ -1,10 +1,10 @@
 <?php
 
-namespace GoogleGlass\Controller;
+namespace Phass\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Http\Response;
-use GoogleGlass\Api\Exception\ApiCallException;
+use Phass\Api\Exception\ApiCallException;
 use Zend\Http\Response\Stream;
 use Zend\Http\Headers;
 
@@ -19,7 +19,7 @@ class AttachmentController extends AbstractActionController
             throw new \InvalidArgumentException("Missing necessary IDs to retrieve attachment");
         }
         
-        $glassService = $this->getServiceLocator()->get('GoogleGlass\Service\GlassService');
+        $glassService = $this->getServiceLocator()->get('Phass\Service\GlassService');
         
         if(!$glassService->isAuthenticated()) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_401);
@@ -28,9 +28,9 @@ class AttachmentController extends AbstractActionController
             return;
         }
         
-        $token = $this->getServiceLocator()->get('GoogleGlass\OAuth2\Token');
+        $token = $this->getServiceLocator()->get('OAuth2\Token');
 
-        $client = $this->getServiceLocator()->get('GoogleGlass\Api\Client');
+        $client = $this->getServiceLocator()->get('Phass\Api\Client');
         
         try {
             $response = $client->execute("timeline::attachment::get", compact('itemId', 'attachmentId'));

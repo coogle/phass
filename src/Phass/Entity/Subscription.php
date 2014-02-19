@@ -7,6 +7,10 @@ use Zend\Uri\Uri;
 
 class Subscription extends GlassModelAbstract
 {
+    const UPDATE = "UPDATE";
+    const DELETE = "DELETE";
+    const INSERT = "INSERT";
+    
     /**
      * @var string
      */

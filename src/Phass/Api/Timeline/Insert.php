@@ -59,7 +59,11 @@ class Insert extends ApiAbstract
         $content .= $item->toJson(false);
         
         foreach($itemAttachments as $attachment) {
-            $content .= "\n--$boundary\nContent-Type: {$attachment->getMimeType()}\nContent-Transfer-Encoding: binary\n\n{$attachment->getContent()}";
+        	$attachmentData = $attachment->getContent();
+        	
+        	if(!empty($attachmentData)) {
+            	$content .= "\n--$boundary\nContent-Type: {$attachment->getMimeType()}\nContent-Transfer-Encoding: binary\n\n{$attachment->getContent()}";
+        	}
         }
         
         $content .= "\n--$boundary--";
